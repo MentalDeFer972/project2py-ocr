@@ -6,6 +6,7 @@ import pandas as pd
 url = "https://books.toscrape.com/"
 one_product_url = "https://books.toscrape.com/catalogue/its-only-the-himalayas_981/index.html"
 url_list = []
+url_for_unique_categorie = []
 url_by_categories = []
 
 response = requests.get(url)
@@ -14,9 +15,7 @@ category_side = soup.findAll('ul', 'nav nav-list')
 article = soup.findAll('article', 'product_pod')
 
 """Etape 4"""
-
-
-"""def get_link_category():
+def get_link_category():
     for cat in category_side:
         get_li = cat.findAll('li')
         for li in get_li:
@@ -30,7 +29,7 @@ article = soup.findAll('article', 'product_pod')
                 for s in s_link:
                     link_s = s.findAll('a')
                     for l in link_s:
-                        print(url + 'catalogue/' + l['href'].strip('../'))"""
+                        print(url + 'catalogue/' + l['href'].strip('../'))
 
 
 def tab_catalogue():
@@ -40,6 +39,18 @@ def tab_catalogue():
             get_a = div.findAll('a')
             for a in get_a:
                 url_list.append(url + a['href'])
+
+def tab_for_book(url_link):
+    response = requests.get(url_link)
+    soup = BeautifulSoup(response.text, "html.parser")
+    category_side = soup.findAll('ul', 'nav nav-list')
+    article = soup.findAll('article', 'product_pod')
+    for a in article:
+        s_link = a.findAll('div', 'image_container')
+        for s in s_link:
+            link_s = s.findAll('a')
+            for l in link_s:
+                url_for_unique_categorie.append(url + 'catalogue/' + l['href'].strip('../'))
 
 
 def display_book(book_link):
@@ -68,11 +79,14 @@ def display_book(book_link):
         print(review_rating.text)
         print(image_url['src'])
 
-tab_catalogue()
 
+"""Etape 2"""
 display_book(one_product_url)
 
+"""Etape 3"""
+tab_for_book("https://books.toscrape.com/catalogue/category/books/travel_2/index.html")
+for url in url_for_unique_categorie:
+    display_book(url)
 
-
-"""Etape 1"""
+"""Etape 4"""
 
