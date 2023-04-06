@@ -117,36 +117,9 @@ def get_url_for_one_categories():
             writer.writerow(data_list)
             data_list.clear()
 
+"""Etape 4 et 5"""
 
-"""Etape 4"""
-
-
-def get_all_books_by_category():
-    for cat in category_side:
-        get_li = cat.findAll('li')
-        for li in get_li:
-            get_a = li.findAll('a')
-            for a in get_a:
-                link = base_url + a['href']
-                with open(a.text.strip() + '.csv', "w", encoding="utf-8") as f:
-                    response_for_category = requests.get(link)
-                    soup_for_category = BeautifulSoup(response_for_category.text, "html.parser")
-                    s_link = soup_for_category.findAll('div', 'image_container')
-                    writer = csv.writer(f)
-                    writer.writerow(data)
-                    for s in s_link:
-                        link_s = s.findAll('a')
-                        for l in link_s:
-                            url_required = base_url + 'catalogue/' + l['href'].strip('../')
-                            display_book(url_required)
-                            writer.writerow(data_list)
-                            data_list.clear()
-
-
-"""Etape 5"""
-
-
-def get_all_img_by_category():
+def get_all_img_and_books_by_category():
     for cat in category_side:
         get_li = cat.findAll('li')
         for li in get_li:
@@ -177,7 +150,5 @@ def get_all_img_by_category():
 
 get_extract_for_one_product()
 get_url_for_one_categories()
-get_all_books_by_category()
+get_all_img_and_books_by_category()
 
-get_all_img_by_category()
-print(img_list)
