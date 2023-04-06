@@ -1,14 +1,20 @@
+
+import urllib.request
+
+
 import requests
 
 from bs4 import BeautifulSoup
 import csv
-import pandas as pd
+import os
 
 base_url = "https://books.toscrape.com/"
 one_product_url = "https://books.toscrape.com/catalogue/its-only-the-himalayas_981/index.html"
 data = ["product_page_url", "title", "category", "universal_product_code", "price_including_tax", "price_excluding_tax",
         "number_available", "product_description", "image_url", "review_rating"]
 data_list = []
+img_list = []
+
 
 response = requests.get(base_url)
 soup = BeautifulSoup(response.text, "html.parser")
@@ -69,6 +75,21 @@ def display_book(book_link):
     data_list.append(image_url)
     data_list.append(review_rating.text)
 
+def extract_title(book_link):
+    response = requests.get(book_link)
+    soup = BeautifulSoup(response.text, 'html.parser')
+    title = soup.find("h1")
+    return title.text
+
+def extract_img(book_link):
+    response = requests.get(book_link)
+    soup = BeautifulSoup(response.text, 'html.parser')
+
+    image = soup.findAll("img")[0]
+    image_url = base_url + image['src'].strip('../')
+
+    img_list.append(image_url)
+
 
 """Etape 2"""
 
@@ -90,7 +111,8 @@ def get_url_for_one_categories():
         writer = csv.writer(f)
         writer.writerow(data)
 
-        for url_required in get_url_for_unique_categories("https://books.toscrape.com/catalogue/category/books/travel_2/index.html"):
+        for url_required in get_url_for_unique_categories(
+                "https://books.toscrape.com/catalogue/category/books/travel_2/index.html"):
             display_book(url_required)
             writer.writerow(data_list)
             data_list.clear()
@@ -121,6 +143,41 @@ def get_all_books_by_category():
                             data_list.clear()
 
 
+"""Etape 5"""
+
+
+def get_all_img_by_category():
+    for cat in category_side:
+        get_li = cat.findAll('li')
+        for li in get_li:
+            get_a = li.findAll('a')
+            for a in get_a:
+                link = base_url + a['href']
+                with open(a.text.strip() + '.csv', "w", encoding="utf-8") as f:
+                    response_for_category = requests.get(link)
+                    soup_for_category = BeautifulSoup(response_for_category.text, "html.parser")
+                    s_link = soup_for_category.findAll('div', 'image_container')
+                    writer = csv.writer(f)
+                    writer.writerow(data)
+                    os.mkdir(a.text.strip())
+                    for s in s_link:
+                        link_s = s.findAll('a')
+                        for l in link_s:
+                            url_required = base_url + 'catalogue/' + l['href'].strip('../')
+                            display_book(url_required)
+                            writer.writerow(data_list)
+                            extract_img(url_required)
+                            data_list.clear()
+                            for img in img_list:
+                                response_img = requests.get(img)
+                                title = extract_title(url_required)
+                                file = open(a.text.strip()+"/"+title+".jpg","wb")
+                                file.write(response_img.content)
+                                file.close()
+
 get_extract_for_one_product()
 get_url_for_one_categories()
 get_all_books_by_category()
+
+get_all_img_by_category()
+print(img_list)
