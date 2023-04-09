@@ -4,20 +4,25 @@ from bs4 import BeautifulSoup
 import csv
 import os
 
+#Liens URL pour scraper les informations.
 base_url = "https://books.toscrape.com/"
 one_product_url = "https://books.toscrape.com/catalogue/its-only-the-himalayas_981/index.html"
+
+#Créations des tableaux pour créer le fichier CSV ainsi que la liste des liens URL et liens images.
 data = ["product_page_url", "title", "category", "universal_product_code", "price_including_tax", "price_excluding_tax",
         "number_available", "product_description", "image_url", "review_rating"]
 data_list = []
 img_list = []
 
-
+#Récupérer le code source du lien HTML et l'extraire.
 response = requests.get(base_url)
 soup = BeautifulSoup(response.text, "html.parser")
 category_side = soup.findAll('ul', 'nav nav-list')
 articles = soup.findAll('article', 'product_pod')
 
 
+
+#Extraire les URL de la page Web principale.
 def get_url_list():
     url_list = []
     for article in articles:
@@ -28,7 +33,7 @@ def get_url_list():
                 url_list.append(base_url + a['href'])
     return url_list
 
-
+#Extraire les URL de la page Web,par catégories.
 def get_url_for_unique_categories(url_link):
     url_for_unique_categories = []
     response = requests.get(url_link)
@@ -44,6 +49,7 @@ def get_url_for_unique_categories(url_link):
     return url_for_unique_categories
 
 
+#Afficher les informations du livre sélectionné à partir de l'URL choisie.
 def display_book(book_link):
     response = requests.get(book_link)
     soup = BeautifulSoup(response.text, 'html.parser')
@@ -71,24 +77,24 @@ def display_book(book_link):
     data_list.append(image_url)
     data_list.append(review_rating.text)
 
+#Afficher uniquement le titre du livre sélectionné à partir de l'URL choisie.
 def extract_title(book_link):
     response = requests.get(book_link)
     soup = BeautifulSoup(response.text, 'html.parser')
     title = soup.find("h1")
     return title.text
 
+#Afficher les URL des images des livres sélectionné à partir de l'URL de la catégorie choisie.
 def extract_img(book_link):
     response = requests.get(book_link)
     soup = BeautifulSoup(response.text, 'html.parser')
-
     image = soup.findAll("img")[0]
     image_url = base_url + image['src'].strip('../')
-
     img_list.append(image_url)
 
 
 """Etape 2"""
-
+#Permet d'extraire les données de la page sélectionnée au format de fichier csv.
 
 def get_extract_for_one_product():
     with open('url.csv', "w", encoding="utf-8") as f:
@@ -100,6 +106,7 @@ def get_extract_for_one_product():
 
 
 """Etape 3"""
+#Extraire les données de tous les livres de la catégories sélectionnés.
 
 
 def get_url_for_one_categories():
@@ -114,6 +121,8 @@ def get_url_for_one_categories():
             data_list.clear()
 
 """Etape 4 et 5"""
+#Extraire les données de tous les livres de toutes les catégories,et de générer un fichier csv pour chaque catégorie.
+#Extraire et enregistrer les images par catégories.
 
 def get_all_img_and_books_by_category():
     for cat in category_side:
@@ -143,6 +152,9 @@ def get_all_img_and_books_by_category():
                                 file = open(a.text.strip()+"/"+title+".jpg","wb")
                                 file.write(response_img.content)
                                 file.close()
+
+
+#Exécutions des scripts.
 
 get_extract_for_one_product()
 get_url_for_one_categories()
