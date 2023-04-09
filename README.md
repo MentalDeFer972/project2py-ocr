@@ -6,7 +6,7 @@ Il consiste à faire du web scraping à partir d'un site Web(Books to Scrape).
 
 ## Etape 1 : Cloner le projet.
 
-Premièrement,il faut cloner le projet en fesant la commande "git clone https://github.com/MentalDeFer972/project2py-ocr" sur le Terminal(sur Mac/Linux)/invite de commandes(sur Windows),ensuite ouvrir ce projet avec Visual Studio Code ou PyCharm,sur Windows/Mac/Linux.
+Premièrement,il faut cloner le projet en faisant la commande "git clone https://github.com/MentalDeFer972/project2py-ocr" sur le Terminal(sur Mac/Linux)/invite de commandes(sur Windows),ensuite ouvrir ce projet avec Visual Studio Code ou PyCharm,sur Windows/Mac/Linux.
 
 ## Etape 2 : Créer et activer l'environnement virtuel.
 
