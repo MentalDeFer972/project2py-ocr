@@ -10,7 +10,7 @@ Premièrement,il faut cloner le projet en faisant la commande "git clone https:/
 
 ## Etape 2 : Créer et activer l'environnement virtuel.
 
-Deuxièment,il faut créer l'environnement virtuel en faisant la commande "ls project2py-ocr" puis "python -m venv env",et enfin "source env/Scripts/activate.bat" pour activer l'environnement virtuel.
+Deuxièment,il faut créer l'environnement virtuel en faisant la commande "ls project2py-ocr" puis "python -m venv env",puis "cd env/Scripts/",et enfin "activate.bat" pour activer l'environnement virtuel.
 
 ## Etape 3 : Installer les modules avec le fichier "requirements.txt"
 
