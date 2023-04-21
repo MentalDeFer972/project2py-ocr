@@ -98,7 +98,7 @@ def extract_img(book_link):
 
 def get_extract_for_one_product():
     with open('url.csv', "w", encoding="utf-8") as f:
-        writer = csv.writer(f)
+        writer = csv.writer(f,delimiter=";")
         writer.writerow(data)
         display_book(one_product_url)
         writer.writerow(data_list)
@@ -111,7 +111,7 @@ def get_extract_for_one_product():
 
 def get_url_for_one_categories():
     with open('url_for_one_categories.csv', "w", encoding="utf-8") as f:
-        writer = csv.writer(f)
+        writer = csv.writer(f,delimiter=";")
         writer.writerow(data)
 
         for url_required in get_url_for_unique_categories(
@@ -135,7 +135,7 @@ def get_all_img_and_books_by_category():
                     response_for_category = requests.get(link)
                     soup_for_category = BeautifulSoup(response_for_category.text, "html.parser")
                     s_link = soup_for_category.findAll('div', 'image_container')
-                    writer = csv.writer(f)
+                    writer = csv.writer(f,delimiter=";")
                     writer.writerow(data)
                     os.mkdir(a.text.strip())
                     for s in s_link:

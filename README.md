@@ -1,4 +1,4 @@
-# project2py-ocr
+ # project2py-ocr
 
 
 projet2py-ocr est un projet de formation développeur Python de chez OpenClassrooms.
