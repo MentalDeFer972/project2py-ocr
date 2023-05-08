@@ -1,3 +1,4 @@
+import os
 from urllib.parse import urljoin
 
 import requests
@@ -42,6 +43,19 @@ def extract_book(book_link):
     data_list.append(product_description.text)
     data_list.append(image_url)
     data_list.append(review_rating.text)
+
+def extract_img(book_link):
+    response = requests.get(book_link)
+    soup = BeautifulSoup(response.text, 'html.parser')
+    image = soup.findAll("img")[0]
+    image_url = base_url + image['src'].strip('../')
+    return image_url
+
+def extract_title(book_link):
+    response = requests.get(book_link)
+    soup = BeautifulSoup(response.text, 'html.parser')
+    title = soup.find("h1")
+    return title.text
 
 def link_category_function():
     response = requests.get(base_url)
@@ -92,17 +106,51 @@ def type_category(link):
             category = li.text
             return category
 
-def scrape_books():
-        pagination_page("https://books.toscrape.com/catalogue/category/books/historical-fiction_4/index.html")
-        category_name = type_category("https://books.toscrape.com/catalogue/category/books/historical-fiction_4/index.html")
+def scrape_a_book(link_book):
+    with open("book_selected.csv", "w", encoding="utf-8") as f:
+        writer = csv.writer(f,delimiter=";")
+        extract_book(link_book)
+        writer.writerow(data)
+        writer.writerow(data_list)
+        data_list.clear()
+
+def scrape_books_for_one_category(link_category):
+        pagination_page(link_category)
+        category_name = type_category(link_category)
         for link_p in link_pagination:
            link_books_function(link_p)
-           with open(category_name+".csv" , "w" , encoding="utf-8") as f:
+           with open(category_name+".csv", "w", encoding="utf-8") as f:
                 writer = csv.writer(f,delimiter=";")
                 writer.writerow(data)
                 for link_b in link_books:
                    extract_book(link_b)
                    writer.writerow(data_list)
                    data_list.clear()
-   
-scrape_books()
+
+def scrape_books_and_img_for_all_category():
+    link_category_function()
+
+    for link_c in link_category:
+        pagination_page(link_c)
+        category_name = type_category(link_c)
+        for link_p in link_pagination:
+            link_books_function(link_p)
+            with open(category_name + ".csv", "w", encoding="utf-8") as f:
+                writer = csv.writer(f, delimiter=";")
+                writer.writerow(data)
+                os.mkdir(category_name)
+                for link_b in link_books:
+                    extract_book(link_b)
+                    extract_img(link_b)
+                    response_img = requests.get(link_b)
+                    title = extract_title(link_b)
+                    file = open(category_name + "/" + title + ".jpg", "wb")
+                    file.write(response_img.content)
+                    writer.writerow(data_list)
+                    data_list.clear()
+                    file.close()
+
+
+scrape_a_book("https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html")
+scrape_books_for_one_category("https://books.toscrape.com/catalogue/category/books/historical-fiction_4/index.html")
+scrape_books_and_img_for_all_category()
