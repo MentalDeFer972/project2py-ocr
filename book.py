@@ -1,5 +1,6 @@
 import os
-from urllib.parse import urljoin
+import re
+from urllib.parse import urljoin, quote
 
 import requests
 
@@ -107,7 +108,7 @@ def type_category(link):
             return category
 
 def scrape_a_book(link_book):
-    with open("book_selected.csv", "w", encoding="utf-8") as f:
+    with open("BookSelected.csv", "w", encoding="utf-8") as f:
         writer = csv.writer(f,delimiter=";")
         extract_book(link_book)
         writer.writerow(data)
@@ -116,16 +117,17 @@ def scrape_a_book(link_book):
 
 def scrape_books_for_one_category(link_category):
         pagination_page(link_category)
-        category_name = type_category(link_category)
         for link_p in link_pagination:
            link_books_function(link_p)
-           with open(category_name+".csv", "w", encoding="utf-8") as f:
+           with open("CategorySelected.csv", "w", encoding="utf-8") as f:
                 writer = csv.writer(f,delimiter=";")
                 writer.writerow(data)
                 for link_b in link_books:
                    extract_book(link_b)
                    writer.writerow(data_list)
                    data_list.clear()
+                link_books.clear()
+        link_pagination.clear()
 
 def scrape_books_and_img_for_all_category():
     link_category_function()
@@ -133,22 +135,27 @@ def scrape_books_and_img_for_all_category():
     for link_c in link_category:
         pagination_page(link_c)
         category_name = type_category(link_c)
-        for link_p in link_pagination:
-            link_books_function(link_p)
-            with open(category_name + ".csv", "w", encoding="utf-8") as f:
-                writer = csv.writer(f, delimiter=";")
-                writer.writerow(data)
-                os.mkdir(category_name)
-                for link_b in link_books:
-                    extract_book(link_b)
-                    extract_img(link_b)
-                    response_img = requests.get(link_b)
-                    title = extract_title(link_b)
-                    file = open(category_name + "/" + title + ".jpg", "wb")
-                    file.write(response_img.content)
-                    writer.writerow(data_list)
-                    data_list.clear()
-                    file.close()
+
+        with open(category_name + ".csv", "w", encoding="utf-8") as f:
+            writer = csv.writer(f, delimiter=";")
+            writer.writerow(data)
+            os.mkdir(category_name)
+            for link_p in link_pagination:
+                link_books_function(link_p)
+            for link_b in link_books:
+                extract_book(link_b)
+                img = extract_img(link_b)
+                response_img = requests.get(img)
+                title = extract_title(link_b)
+                print(title)
+                file = open(category_name + "/" + re.sub(r'[^\w_. -]', '_', title) + ".jpg", "wb")
+                file.write(response_img.content)
+                writer.writerow(data_list)
+                data_list.clear()
+                file.close()
+            link_books.clear()
+            link_pagination.clear()
+    link_category.clear()
 
 
 scrape_a_book("https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html")
