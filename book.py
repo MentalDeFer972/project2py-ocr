@@ -18,6 +18,8 @@ data = ["product_page_url", "title", "category", "universal_product_code", "pric
         "number_available", "product_description", "image_url", "review_rating"]
 data_list = []
 
+scrape_name_dir = "ScrapeData"
+
 def extract_book(book_link):
     response = requests.get(book_link)
     soup = BeautifulSoup(response.text, 'html.parser')
@@ -111,8 +113,11 @@ def type_category(link):
             category = li.text
             return category
 
+def make_dir(name):
+    os.mkdir(name)
+
 def scrape_a_book(link_book):
-    with open("BookSelected.csv", "w", encoding="utf-8") as f:
+    with open(scrape_name_dir+"/"+"BookSelected.csv", "w", encoding="utf-8") as f:
         writer = csv.writer(f,delimiter=";")
         extract_book(link_book)
         writer.writerow(data)
@@ -123,7 +128,7 @@ def scrape_books_for_one_category(link_category):
         pagination_page(link_category)
         for link_p in link_pagination:
            link_books_function(link_p)
-           with open("CategorySelected.csv", "w", encoding="utf-8") as f:
+           with open(scrape_name_dir+"/"+"CategorySelected.csv", "w", encoding="utf-8") as f:
                 writer = csv.writer(f,delimiter=";")
                 writer.writerow(data)
                 for link_b in link_books:
@@ -140,10 +145,10 @@ def scrape_books_and_img_for_all_category():
         pagination_page(link_c)
         category_name = type_category(link_c)
 
-        with open(category_name + ".csv", "w", encoding="utf-8") as f:
+        with open(scrape_name_dir + "/" + category_name + ".csv", "w", encoding="utf-8") as f:
             writer = csv.writer(f, delimiter=";")
             writer.writerow(data)
-            os.mkdir(category_name)
+            os.mkdir(scrape_name_dir + "/" + category_name)
             for link_p in link_pagination:
                 link_books_function(link_p)
             for link_b in link_books:
@@ -152,7 +157,7 @@ def scrape_books_and_img_for_all_category():
                 response_img = requests.get(img)
                 title = extract_title(link_b)
                 print(title)
-                file = open(category_name + "/" + re.sub(r'[^\w_. -]', '_', title) + ".jpg", "wb")
+                file = open(scrape_name_dir + "/" + category_name + "/" + re.sub(r'[^\w_. éè-]', '_', title) + ".jpg", "wb")
                 file.write(response_img.content)
                 writer.writerow(data_list)
                 data_list.clear()
@@ -161,7 +166,7 @@ def scrape_books_and_img_for_all_category():
             link_pagination.clear()
     link_category.clear()
 
-
+make_dir(scrape_name_dir)
 scrape_a_book("https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html")
 scrape_books_for_one_category("https://books.toscrape.com/catalogue/category/books/historical-fiction_4/index.html")
-"""scrape_books_and_img_for_all_category()"""
+scrape_books_and_img_for_all_category()
