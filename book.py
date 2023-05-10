@@ -86,15 +86,19 @@ def pagination_page(link):
         response = requests.get(previous_url)
         soup = BeautifulSoup(response.content, 'html.parser')
         footer = soup.select_one('li.current')
-        print(footer.text.strip())
-        print(previous_url)
-        link_pagination.append(previous_url)
-        next_page = soup.select_one('li.next>a')
-        if next_page:
-            next_url = next_page.get('href')
-            previous_url = urljoin(previous_url, next_url)
+        if footer:
+            print(footer.text.strip())
+            print(previous_url)
+            link_pagination.append(previous_url)
+            next_page = soup.select_one('li.next>a')
+            if next_page:
+                next_url = next_page.get('href')
+                previous_url = urljoin(previous_url, next_url)
+            else:
+                break
         else:
             break
+
 
 def type_category(link):
     response = requests.get(link)
@@ -160,4 +164,4 @@ def scrape_books_and_img_for_all_category():
 
 scrape_a_book("https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html")
 scrape_books_for_one_category("https://books.toscrape.com/catalogue/category/books/historical-fiction_4/index.html")
-scrape_books_and_img_for_all_category()
+"""scrape_books_and_img_for_all_category()"""
