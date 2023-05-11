@@ -20,6 +20,8 @@ data_list = []
 
 scrape_name_dir = "ScrapeData"
 
+
+#Extraire les information du livre.
 def extract_book(book_link):
     response = requests.get(book_link)
     soup = BeautifulSoup(response.text, 'html.parser')
@@ -33,7 +35,7 @@ def extract_book(book_link):
     number_available = soup.findAll("td")[5]
     product_description = soup.findAll("p")[3]
     image = soup.findAll("img")[0]
-    review_rating = soup.findAll("td")[6]
+    review_rating = soup.find('p',"star-rating").get("class")[1]
     image_url = base_url + image['src'].strip('../')
 
     data_list.append(product_page_url)
@@ -45,8 +47,24 @@ def extract_book(book_link):
     data_list.append(number_available.text)
     data_list.append(product_description.text)
     data_list.append(image_url)
-    data_list.append(review_rating.text)
+    data_list.append(rating(review_rating))
 
+#Cette fonction convertir la donnée relatives aux notes d'avis en valeur chiffrée.
+def rating(str):
+    match str:
+        case "One":
+            return "1/5"
+        case "Two":
+            return "2/5"
+        case "Three":
+            return "3/5"
+        case "Four":
+            return "4/5"
+        case "Five":
+            return "5/5"
+
+
+#Extraire à partir du lien du livre,le chemin jpg image du livre.
 def extract_img(book_link):
     response = requests.get(book_link)
     soup = BeautifulSoup(response.text, 'html.parser')
@@ -54,12 +72,14 @@ def extract_img(book_link):
     image_url = base_url + image['src'].strip('../')
     return image_url
 
+#Extraire à partir du lien du livre,le titre du livre.
 def extract_title(book_link):
     response = requests.get(book_link)
     soup = BeautifulSoup(response.text, 'html.parser')
     title = soup.find("h1")
     return title.text
 
+#Extraire toutes les liens relatifs aux catégories du livre.
 def link_category_function():
     response = requests.get(base_url)
     soup = BeautifulSoup(response.text, 'html.parser')
@@ -70,6 +90,7 @@ def link_category_function():
             link_category.append(base_url + a['href'])
 
 
+#Extraire toutes les liens relatifs aux livres à partir du lien relatifs à la catégorie du livre.
 def link_books_function(link):
     response = requests.get(link)
     soup = BeautifulSoup(response.text, "html.parser")
@@ -81,7 +102,7 @@ def link_books_function(link):
             for href in ahref:
                 link_books.append(base_url + 'catalogue/' + href['href'].strip('../'))
 
-
+#Permet la pagination du lien relatif à la catégorie du livre(Dans une catégorie,il y plusieurs pages)
 def pagination_page(link):
     previous_url = link
     while True:
@@ -103,7 +124,7 @@ def pagination_page(link):
             link_pagination.append(previous_url)
             break
 
-
+#Retourne la catégorie du livre
 def type_category(link):
     response = requests.get(link)
     soup = BeautifulSoup(response.text, "html.parser")
@@ -115,9 +136,11 @@ def type_category(link):
             category = li.text
             return category
 
+#Permet de créer le dossier principal du projet,de regrouper les données du scraping.
 def make_dir(name):
     os.mkdir(name)
 
+#Permet de scraper un seul livre et de l'enregistrer au format csv(Etape 2)
 def scrape_a_book(link_book):
     with open(scrape_name_dir+"/"+"BookSelected.csv", "w", encoding="utf-8") as f:
         writer = csv.writer(f,delimiter=";")
@@ -126,6 +149,7 @@ def scrape_a_book(link_book):
         writer.writerow(data_list)
         data_list.clear()
 
+#Permet de scraper tous les livres d'une seule catégorie(Etape 3)
 def scrape_books_for_one_category(link_category):
         pagination_page(link_category)
         for link_p in link_pagination:
@@ -140,6 +164,8 @@ def scrape_books_for_one_category(link_category):
                 link_books.clear()
         link_pagination.clear()
 
+#Permet de scraper tous les livres de toutes les catégories,au format csv.(Etape 4)
+#Permet d'extraire les images des livres(format jpg),regroupées par catégories(Etape 5)
 def scrape_books_and_img_for_all_category():
     link_category_function()
 
@@ -171,7 +197,7 @@ def scrape_books_and_img_for_all_category():
 def execute():
     make_dir(scrape_name_dir)
     scrape_a_book("https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html")
-    scrape_books_for_one_category("https://books.toscrape.com/catalogue/category/books/travel_2/index.html")
-    scrape_books_and_img_for_all_category()
+    """scrape_books_for_one_category("https://books.toscrape.com/catalogue/category/books/travel_2/index.html")"""
+    """scrape_books_and_img_for_all_category()"""
 
 execute()
