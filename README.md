@@ -25,4 +25,4 @@ Et voilà! Vous avez lancé le projet.
 
 ## Informations importantes
 
-Quand vous exécuter le script,les données scrapées sont dans le dossier "ScrapeData"
+Quand vous exécuter le script,les données scrapées sont dans le dossier "ScrapeData".
