@@ -99,6 +99,8 @@ def pagination_page(link):
             else:
                 break
         else:
+            print(previous_url)
+            link_pagination.append(previous_url)
             break
 
 
@@ -166,7 +168,10 @@ def scrape_books_and_img_for_all_category():
             link_pagination.clear()
     link_category.clear()
 
-make_dir(scrape_name_dir)
-scrape_a_book("https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html")
-scrape_books_for_one_category("https://books.toscrape.com/catalogue/category/books/historical-fiction_4/index.html")
-scrape_books_and_img_for_all_category()
+def execute():
+    make_dir(scrape_name_dir)
+    scrape_a_book("https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html")
+    scrape_books_for_one_category("https://books.toscrape.com/catalogue/category/books/travel_2/index.html")
+    scrape_books_and_img_for_all_category()
+
+execute()
