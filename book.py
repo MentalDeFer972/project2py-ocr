@@ -197,7 +197,7 @@ def scrape_books_and_img_for_all_category():
 def execute():
     make_dir(scrape_name_dir)
     scrape_a_book("https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html")
-    """scrape_books_for_one_category("https://books.toscrape.com/catalogue/category/books/travel_2/index.html")"""
-    """scrape_books_and_img_for_all_category()"""
+    scrape_books_for_one_category("https://books.toscrape.com/catalogue/category/books/travel_2/index.html")
+    scrape_books_and_img_for_all_category()
 
 execute()
