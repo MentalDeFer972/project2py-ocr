@@ -18,7 +18,7 @@ Et enfin,pour installer les modules Python,il faut faire la commande "pip instal
 
 ## Etape 4 : Exécuter ce projet.
 
-Sur l'invite de commandes (Windows) ou le Terminal(Mac/Linux),lancer la commande "python bookscrape.py".
+Sur l'invite de commandes (Windows) ou le Terminal(Mac/Linux),lancer la commande "python book.py".
 Vous pouvez aussi le lancer à traver Visual Studio Code ou PyCharm.
 
 Et voilà! Vous avez lancé le projet.
