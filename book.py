@@ -53,15 +53,15 @@ def extract_book(book_link):
 def rating(str):
     match str:
         case "One":
-            return "1/5"
+            return "1 sur 5"
         case "Two":
-            return "2/5"
+            return "2 sur 5"
         case "Three":
-            return "3/5"
+            return "3 sur 5"
         case "Four":
-            return "4/5"
+            return "4 sur 5"
         case "Five":
-            return "5/5"
+            return "5 sur 5"
 
 
 #Extraire à partir du lien du livre,le chemin jpg image du livre.
